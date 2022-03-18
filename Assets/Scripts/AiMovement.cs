@@ -6,42 +6,93 @@ public class AiMovement : MonoBehaviour
 {
     public Transform player;
     public float chaseDistance = 3;
-    //an array of GameObjects
-    public Transform[] waypoints;
+    ////an array of GameObjets
+    public List<Transform> waypoints;
+    //public Transform[] waypoints;
     public int waypointIndex = 0;
+    public GameObject waypointPrefab;
+
+
     //public GameObject position0;
     //public GameObject position1;
     public float speed = 1.5f;
     public float minGoalDistance = 0.1f;
 
-    private void Update()
+
+    /*  public void Update()
+      {
+          Debug.Log(waypoints.Length);
+          //are we within the player chase distance
+          if (Vector2.Distance(transform.position, player.position) < chaseDistance)
+          {
+              AIMoveTowards(player);
+          }
+
+          else
+          {
+              WaypointUpdate();
+              AIMoveTowards(waypoints[waypointIndex].transform);
+          }
+          //the number is called the index [NUMBER]
+
+
+          //Moves towards our waypoints
+          //
+      }
+     */
+
+    private void Start()
     {
-        Debug.Log(waypoints.Length);
-        //are we within the player chase distance
-        if (Vector2.Distance(transform.position, player.position) < chaseDistance)
-        {
-            AIMoveTowards(player);
-        }
-
-        else
-        {
-            WaypointUpdate();
-            AIMoveTowards(waypoints[waypointIndex].transform);
-        }
-        //the number is called the index [NUMBER]
-
-
-        //Moves twoards our waypoints
-        //
+        NewWaypoints();
+        NewWaypoints();
+        NewWaypoints();
+        NewWaypoints();
+        NewWaypoints();
     }
 
-    private void WaypointUpdate()
+    public void NewWaypoints()
     {
+        float x = Random.Range(-5f, 5f);
+        float y = Random.Range(-5f, 5f);
+
+        GameObject newPoint = Instantiate(waypointPrefab, new Vector2(x,y), Quaternion.identity);
+
+        waypoints.Add(newPoint.transform);
+    }
+
+
+    public void LowestDistance()
+    {
+        float lowestDistance = float.PositiveInfinity;
+        int lowestIndex = 0;
+        float distance;
+
+        for (int i = 0; i < waypoints.Count; i++)
+        {
+            distance = Vector2.Distance(player.position, waypoints[i].position);
+            if (distance >= lowestDistance)
+            {
+                lowestDistance = distance;
+                lowestIndex = i;
+            }
+            waypointIndex = lowestIndex;
+
+        }
+    }
+
+
+
+    public void WaypointUpdate()
+    {
+
+   
+
+
         Vector2 AiPosition = transform.position;
         if (Vector2.Distance(AiPosition, waypoints[waypointIndex].position) < minGoalDistance)
         {
             waypointIndex++;
-            if (waypointIndex >= waypoints.Length)
+            if (waypointIndex >= waypoints.Count)
             {
                 //sets array back to 0, goes back to first diamond in array
                 waypointIndex = 0;
@@ -52,7 +103,7 @@ public class AiMovement : MonoBehaviour
         
     }
 
-    private void AIMoveTowards(Transform goal)
+    public void AIMoveTowards(Transform goal)
     {
 
 
